@@ -1,6 +1,8 @@
 {
-	"general": {
-		"cryptoAlerts": "Crypto Alerts",
+	"sidebar": {
+		"title": "Crypto Alerts",
+		"monitor": "Monitor",
+		"alerts": "Alerts",
 		"startStream": "Start Stream",
 		"stopStream": "Stop Stream"
 	},
