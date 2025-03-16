@@ -1,44 +1,26 @@
 import { Button } from '@/shared/components/ui/button';
-import { useWebSocket } from '@/shared/context/websocketContext';
 import { cn } from '@/shared/lib/utils';
 import { Monitor, Play, Siren, Square } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
-type CryptoData = {
-	M: string;
-	P: number;
+type SidebarProps = {
+	isStreaming: boolean;
+	isStartDisabled: boolean;
+	isStopDisabled: boolean;
+	startStream: () => void;
+	stopStream: () => void;
 };
 
-const Sidebar: React.FC = () => {
+const Sidebar: React.FC<SidebarProps> = ({
+	isStreaming,
+	isStartDisabled,
+	isStopDisabled,
+	startStream,
+	stopStream
+}) => {
 	const { t } = useTranslation();
-	const {
-		socket,
-		isStreaming,
-		isStartDisabled,
-		isStopDisabled,
-		startStream,
-		stopStream
-	} = useWebSocket();
-
-	const [data, setData] = useState<CryptoData | null>(null);
-
-	useEffect(() => {
-		if (!socket) return;
-
-		socket.onmessage = event => {
-			const message = JSON.parse(event.data);
-			console.log('Received message:', message);
-			setData(message);
-		};
-
-		return () => {
-			if (socket) {
-				socket.close();
-			}
-		};
-	}, [socket]);
 
 	const commonStyles =
 		'flex items-center justify-center gap-2 rounded px-4 py-2 text-center';
