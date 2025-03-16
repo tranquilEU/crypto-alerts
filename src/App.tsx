@@ -8,7 +8,7 @@ import { ToastContainer } from 'react-toastify';
 
 const App: React.FC = () => {
 	const {
-		messages,
+		snapshot,
 		isStreaming,
 		isStartDisabled,
 		isStopDisabled,
@@ -28,7 +28,7 @@ const App: React.FC = () => {
 				/>
 				<div className="flex-1 p-4">
 					<Routes>
-						<Route path="/monitor" element={<Monitor messages={messages} />} />
+						<Route path="/monitor" element={<Monitor snapshot={snapshot} />} />
 						<Route path="/alerts" element={<Alerts />} />
 					</Routes>
 				</div>

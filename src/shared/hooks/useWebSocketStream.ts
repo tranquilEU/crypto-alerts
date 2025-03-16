@@ -1,12 +1,14 @@
+import { TSnapshot, TWebSocketMessage } from '@/shared/@types/stream';
 import { createWebSocket } from '@/shared/services/websocketService';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { Subscription } from 'rxjs/internal/Subscription';
 
 export const useWebSocketStream = () => {
 	const { t } = useTranslation();
-	const [messages, setMessages] = useState<string[]>([]);
+	const messages = useRef<TWebSocketMessage[]>([]);
+	const snapshot = useRef<TSnapshot | undefined>(undefined);
 	const [webSocketSubscription, setWebSocketSubscription] =
 		useState<Subscription | null>(null);
 	const [isStreaming, setIsStreaming] = useState(false);
@@ -21,11 +23,14 @@ export const useWebSocketStream = () => {
 
 		if (websocket) {
 			const subscription = websocket.subscribe({
-				next: message => {
-					setMessages(prevMessages => [
-						...prevMessages,
-						JSON.stringify(message)
-					]);
+				next: (message: unknown) => {
+					const typedMessage = message as TWebSocketMessage;
+					messages.current = [...messages.current, typedMessage];
+
+					if (typedMessage.TYPE === '9') {
+						const typedSnapshot = message as TSnapshot;
+						snapshot.current = typedSnapshot;
+					}
 
 					setTimeout(() => {
 						setIsStopDisabled(false);
@@ -63,6 +68,7 @@ export const useWebSocketStream = () => {
 
 	return {
 		messages,
+		snapshot: snapshot.current,
 		isStreaming,
 		isStartDisabled,
 		isStopDisabled,
