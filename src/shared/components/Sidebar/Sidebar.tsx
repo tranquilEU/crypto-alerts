@@ -1,6 +1,7 @@
 import { Button } from '@/shared/components/ui/button';
 import { useWebSocket } from '@/shared/context/websocketContext';
 import { cn } from '@/shared/lib/utils';
+import { Monitor, Play, Siren, Square } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -39,7 +40,8 @@ const Sidebar: React.FC = () => {
 		};
 	}, [socket]);
 
-	const commonStyles = 'rounded px-4 py-2 text-center';
+	const commonStyles =
+		'flex items-center justify-center gap-2 rounded px-4 py-2 text-center';
 
 	return (
 		<div className="flex h-screen w-64 flex-col justify-between bg-gray-800 text-white">
@@ -50,23 +52,25 @@ const Sidebar: React.FC = () => {
 						to="/monitor"
 						className={cn(commonStyles, 'bg-blue-600 hover:bg-blue-500')}
 					>
+						<Monitor size={20} />
 						{t('sidebar.monitor')}
 					</Link>
 					<Link
 						to="/alerts"
 						className={cn(commonStyles, 'bg-amber-600 hover:bg-amber-500')}
 					>
+						<Siren size={20} />
 						{t('sidebar.alerts')}
 					</Link>
 				</div>
 			</div>
-
 			<div className="flex flex-col gap-4 p-4">
 				<Button
 					className={cn(commonStyles, 'bg-green-600 hover:bg-green-500')}
 					disabled={isStreaming || isStartDisabled}
 					onClick={startStream}
 				>
+					<Play size={20} />
 					{t('sidebar.startStream')}
 				</Button>
 				<Button
@@ -74,6 +78,7 @@ const Sidebar: React.FC = () => {
 					disabled={!isStreaming || isStopDisabled}
 					onClick={stopStream}
 				>
+					<Square size={20} />
 					{t('sidebar.stopStream')}
 				</Button>
 			</div>
