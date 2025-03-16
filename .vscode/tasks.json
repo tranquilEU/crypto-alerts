@@ -1,0 +1,34 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "install",
+      "group": "clean",
+      "problemMatcher": [],
+      "label": "npm: install",
+      "detail": "install dependencies from package"
+    },
+    {
+      "type": "npm",
+      "script": "dev",
+      "problemMatcher": [],
+      "label": "start app",
+      "detail": "vite"
+    },
+    {
+      "type": "npm",
+      "script": "tsc",
+      "problemMatcher": [],
+      "label": "type-check",
+      "detail": "tsc"
+    },
+    {
+      "type": "npm",
+      "script": "lint",
+      "problemMatcher": [],
+      "label": "lint",
+      "detail": "eslint"
+    }
+  ]
+}
