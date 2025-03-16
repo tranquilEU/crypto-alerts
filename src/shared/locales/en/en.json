@@ -3,5 +3,10 @@
 		"cryptoAlerts": "Crypto Alerts",
 		"startStream": "Start Stream",
 		"stopStream": "Stop Stream"
+	},
+	"toastMessages": {
+		"open": "Stream opened",
+		"close": "Stream closed",
+		"error": "WebSocket connection error"
 	}
 }

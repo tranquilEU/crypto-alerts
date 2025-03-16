@@ -10,7 +10,14 @@ type CryptoData = {
 
 export const General: React.FC = () => {
 	const { t } = useTranslation();
-	const { socket, startStream, stopStream, isStreaming } = useWebSocket();
+	const {
+		socket,
+		isStreaming,
+		isStartDisabled,
+		isStopDisabled,
+		startStream,
+		stopStream
+	} = useWebSocket();
 
 	const [data, setData] = useState<CryptoData | null>(null);
 
@@ -34,12 +41,12 @@ export const General: React.FC = () => {
 		<>
 			<h1 className="font-bold">{t('general.cryptoAlerts')}</h1>
 			<div>
-				<Button disabled={isStreaming} onClick={startStream}>
+				<Button disabled={isStreaming || isStartDisabled} onClick={startStream}>
 					{t('general.startStream')}
 				</Button>
 				<Button
 					variant="destructive"
-					disabled={!isStreaming}
+					disabled={!isStreaming || isStopDisabled}
 					onClick={stopStream}
 				>
 					{t('general.stopStream')}
