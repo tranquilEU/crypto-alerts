@@ -3,12 +3,14 @@ import { createWebSocket } from '@/shared/services/websocketService';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { Subscription } from 'rxjs/internal/Subscription';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { scan } from 'rxjs/operators';
 
 export const useWebSocketStream = () => {
 	const { t } = useTranslation();
-	const messages = useRef<TWebSocketMessage[]>([]);
 	const snapshot = useRef<TSnapshot | undefined>(undefined);
+	const ordersSubject = useRef(new BehaviorSubject<TWebSocketMessage[]>([])); // Keeps track of orders
+	const [orders, setOrders] = useState<TWebSocketMessage[]>([]);
 	const [webSocketSubscription, setWebSocketSubscription] =
 		useState<Subscription | null>(null);
 	const [isStreaming, setIsStreaming] = useState(false);
@@ -22,14 +24,21 @@ export const useWebSocketStream = () => {
 		setIsStopDisabled(true);
 
 		if (websocket) {
+			// Subscribe to WebSocket and orders
 			const subscription = websocket.subscribe({
 				next: (message: unknown) => {
 					const typedMessage = message as TWebSocketMessage;
-					messages.current = [...messages.current, typedMessage];
 
 					if (typedMessage.TYPE === '9') {
 						const typedSnapshot = message as TSnapshot;
 						snapshot.current = typedSnapshot;
+					}
+
+					if (typedMessage.TYPE === '8') {
+						const typedOrder = message as TWebSocketMessage;
+
+						// Push new order into BehaviorSubject
+						ordersSubject.current.next([typedOrder]);
 					}
 
 					setTimeout(() => {
@@ -45,7 +54,27 @@ export const useWebSocketStream = () => {
 				}
 			});
 
-			setWebSocketSubscription(subscription);
+			const ordersSubscription = ordersSubject.current
+				.pipe(
+					scan(
+						(
+							allOrders: TWebSocketMessage[],
+							newOrders: TWebSocketMessage[]
+						) => {
+							return [...allOrders, ...newOrders].slice(-500);
+						},
+						[] as TWebSocketMessage[]
+					)
+				)
+				.subscribe(latestOrders => setOrders(latestOrders));
+
+			setWebSocketSubscription(
+				new Subscription(() => {
+					subscription.unsubscribe();
+					ordersSubscription.unsubscribe();
+				})
+			);
+
 			subscribe();
 		}
 	};
@@ -67,8 +96,8 @@ export const useWebSocketStream = () => {
 	};
 
 	return {
-		messages,
 		snapshot: snapshot.current,
+		orders: orders.reverse(),
 		isStreaming,
 		isStartDisabled,
 		isStopDisabled,

@@ -1,7 +1,14 @@
 import { Button } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
-import { Monitor, Play, Siren, Square } from 'lucide-react';
-import React from 'react';
+import {
+	ChevronLeft,
+	ChevronRight,
+	Monitor,
+	Play,
+	Siren,
+	Square
+} from 'lucide-react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -21,28 +28,55 @@ const Sidebar: React.FC<SidebarProps> = ({
 	stopStream
 }) => {
 	const { t } = useTranslation();
+	const [isExpanded, setIsExpanded] = useState(true);
 
 	const commonStyles =
 		'flex items-center justify-center gap-2 rounded px-4 py-2 text-center';
 
+	const toggleSidebar = () => {
+		setIsExpanded(prevState => !prevState);
+	};
+
 	return (
-		<div className="flex h-screen w-64 flex-col justify-between bg-gray-800 text-white">
+		<div
+			className={cn(
+				'flex h-screen flex-col justify-between bg-gray-800 text-white',
+				isExpanded ? 'w-64' : 'w-16'
+			)}
+		>
 			<div>
-				<h2 className="p-4 text-2xl font-bold">{t('sidebar.title')}</h2>
+				<div className="flex items-center justify-between p-4">
+					{isExpanded && (
+						<h2 className="text-2xl font-bold">{t('sidebar.title')}</h2>
+					)}
+					<Button
+						className="rounded bg-gray-600 p-2 hover:bg-gray-500"
+						onClick={toggleSidebar}
+					>
+						{isExpanded ? (
+							<ChevronLeft size={20} />
+						) : (
+							<ChevronRight size={20} />
+						)}
+					</Button>
+				</div>
 				<div className="flex flex-col gap-4 p-4">
 					<Link
 						to="/monitor"
-						className={cn(commonStyles, 'bg-blue-600 hover:bg-blue-500')}
+						className={cn(
+							commonStyles,
+							'flex items-center justify-center bg-blue-600 hover:bg-blue-500'
+						)}
 					>
-						<Monitor size={20} />
-						{t('sidebar.monitor')}
+						<Monitor size={20} className="flex-shrink-0" />
+						{isExpanded && t('sidebar.monitor')}
 					</Link>
 					<Link
 						to="/alerts"
 						className={cn(commonStyles, 'bg-amber-600 hover:bg-amber-500')}
 					>
-						<Siren size={20} />
-						{t('sidebar.alerts')}
+						<Siren size={20} className="flex-shrink-0" />
+						{isExpanded && t('sidebar.alerts')}
 					</Link>
 				</div>
 			</div>
@@ -53,7 +87,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 					onClick={startStream}
 				>
 					<Play size={20} />
-					{t('sidebar.startStream')}
+					{isExpanded && t('sidebar.startStream')}
 				</Button>
 				<Button
 					className={cn(commonStyles, 'bg-red-600 hover:bg-red-500')}
@@ -61,7 +95,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 					onClick={stopStream}
 				>
 					<Square size={20} />
-					{t('sidebar.stopStream')}
+					{isExpanded && t('sidebar.stopStream')}
 				</Button>
 			</div>
 		</div>

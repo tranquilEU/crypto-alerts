@@ -9,7 +9,7 @@ export type TWebSocketMessage = {
 	P: number;
 	Q: number;
 	SEQ: number;
-	REPORTEDNS: any;
+	REPORTEDNS: number;
 	DELAYNS: number;
 };
 

@@ -10,5 +10,19 @@
 		"open": "Stream opened",
 		"close": "Stream closed",
 		"error": "WebSocket connection error"
+	},
+	"monitor": {
+		"type": "TYPE",
+		"m": "M",
+		"fsym": "FSYM",
+		"tsym": "TSYM",
+		"side": "SIDE",
+		"action": "ACTION",
+		"ccseq": "CCSEQ",
+		"p": "P",
+		"q": "Q",
+		"seq": "SEQ",
+		"reportedns": "REPORTEDNS",
+		"delayns": "DELAYNS"
 	}
 }
