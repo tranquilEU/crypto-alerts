@@ -1,101 +1,77 @@
+import { formatAlertedRows } from '@/features/Monitor/utils/formatAlertedRows';
+import { formatDelayNs } from '@/features/Monitor/utils/formatDelayNs';
+import { formatSide } from '@/features/Monitor/utils/formatSide';
 import { TWebSocketMessage } from '@/shared/@types/stream';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import { cn } from '@/shared/lib/utils';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-interface MonitorPageProps {
+type MonitorPageProps = {
 	orders: TWebSocketMessage[];
-}
+};
 
 const MonitorPage: React.FC<MonitorPageProps> = ({ orders }) => {
 	const { t } = useTranslation();
 	const parentRef = useRef<HTMLDivElement>(null);
 
-	const rowVirtualizer = useVirtualizer({
-		count: orders.length,
-		getScrollElement: () => parentRef.current,
-		estimateSize: () => 40
-	});
-
-	const formatDelayNs = (delayNs: number): string => {
-		const milliseconds = delayNs / 1_000_000;
-		const seconds = delayNs / 1_000_000_000;
-		const minutes = seconds / 60;
-
-		if (milliseconds < 1000) {
-			return `${milliseconds.toFixed(2)} ms`;
-		} else if (seconds < 60) {
-			return `${seconds.toFixed(2)} seconds`;
-		} else {
-			return `${minutes.toFixed(2)} minutes`;
-		}
-	};
-
-	const keyColor = 'text-green-700';
-	const valueColor = 'text-green-400';
-	const pipeColor = 'text-white';
-
 	return (
 		<>
 			{orders && orders.length > 0 && (
 				<div className="h-screen w-full overflow-hidden bg-black font-mono text-sm text-green-400">
-					<div ref={parentRef} className="h-full w-full overflow-y-auto">
-						<div
-							style={{
-								height: `${rowVirtualizer.getTotalSize()}px`,
-								width: '100%',
-								position: 'relative'
-							}}
-						>
-							{rowVirtualizer.getVirtualItems().map(virtualItem => {
-								const order = orders[virtualItem.index];
-								const timestamp = order.REPORTEDNS;
-								const milliseconds = Math.floor(timestamp / 1000000);
-								const readableDate = new Date(milliseconds);
+					<div ref={parentRef} className="h-full w-full overflow-y-auto px-2">
+						<table className="w-full table-auto border-collapse">
+							<thead>
+								<tr
+									className="border-b border-green-700 bg-black text-left text-yellow-400"
+									style={{ position: 'sticky', top: 0, zIndex: 1 }}
+								>
+									<th>#</th>
+									<th>{t('monitor.order')}</th>
+									<th>{t('monitor.market')}</th>
+									<th>{t('monitor.coin')}</th>
+									<th>{t('monitor.tsym')}</th>
+									<th>{t('monitor.bidAsk')}</th>
+									<th>{t('monitor.action')}</th>
+									<th>{t('monitor.ccseq')}</th>
+									<th>{t('monitor.positionValue')}</th>
+									<th>{t('monitor.assetVolume')}</th>
+									<th>{t('monitor.seq')}</th>
+									<th>{t('monitor.reported')}</th>
+									<th>{t('monitor.delay')}</th>
+								</tr>
+							</thead>
+							<tbody>
+								{orders.map((order, index) => {
+									const timestamp = order.REPORTEDNS;
+									const milliseconds = Math.floor(timestamp / 1000000);
+									const readableDate = new Date(milliseconds);
 
-								return (
-									<div
-										className="absolute px-2"
-										key={virtualItem.index}
-										style={{
-											transform: `translateY(${virtualItem.start}px)`
-										}}
-									>
-										<span className="text-yellow-400">
-											{virtualItem.index + 1}
-										</span>{' '}
-										{[
-											{ label: t('monitor.type'), value: order.TYPE },
-											{ label: t('monitor.m'), value: order.M },
-											{ label: t('monitor.fsym'), value: order.FSYM },
-											{ label: t('monitor.tsym'), value: order.TSYM },
-											{ label: t('monitor.side'), value: order.SIDE },
-											{ label: t('monitor.action'), value: order.ACTION },
-											{ label: t('monitor.ccseq'), value: order.CCSEQ },
-											{ label: t('monitor.p'), value: order.P },
-											{ label: t('monitor.q'), value: order.Q },
-											{ label: t('monitor.seq'), value: order.SEQ },
-											{
-												label: t('monitor.reportedns'),
-												value: readableDate.toLocaleTimeString()
-											},
-											{
-												label: t('monitor.delayns'),
-												value: formatDelayNs(order.DELAYNS)
-											}
-										].map(({ label, value }, index) => (
-											<React.Fragment key={index}>
-												<span className={keyColor}>{label}:</span>{' '}
-												<span className={valueColor}>{value}</span>{' '}
-												{index < 11 && (
-													<span className={pipeColor}>|</span>
-												)}{' '}
-											</React.Fragment>
-										))}
-									</div>
-								);
-							})}
-						</div>
+									return (
+										<tr
+											key={index}
+											className={cn(
+												'border-b border-green-700 hover:bg-green-700/20',
+												formatAlertedRows(order)
+											)}
+										>
+											<td className="text-yellow-400">{index + 1}</td>
+											<td>{order.TYPE === '8' && t('monitor.update')}</td>
+											<td>{order.M}</td>
+											<td>{order.FSYM}</td>
+											<td>{order.TSYM}</td>
+											<td>{formatSide(order.SIDE)}</td>
+											<td>{order.ACTION}</td>
+											<td>{order.CCSEQ}</td>
+											<td>{`$${order.P}`}</td>
+											<td>{order.Q}</td>
+											<td>{order.SEQ}</td>
+											<td>{readableDate.toLocaleString()}</td>
+											<td>{formatDelayNs(order.DELAYNS)}</td>
+										</tr>
+									);
+								})}
+							</tbody>
+						</table>
 					</div>
 				</div>
 			)}

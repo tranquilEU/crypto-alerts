@@ -9,7 +9,7 @@ import { scan } from 'rxjs/operators';
 export const useWebSocketStream = () => {
 	const { t } = useTranslation();
 	const snapshot = useRef<TSnapshot | undefined>(undefined);
-	const ordersSubject = useRef(new BehaviorSubject<TWebSocketMessage[]>([])); // Keeps track of orders
+	const ordersSubject = useRef(new BehaviorSubject<TWebSocketMessage[]>([]));
 	const [orders, setOrders] = useState<TWebSocketMessage[]>([]);
 	const [webSocketSubscription, setWebSocketSubscription] =
 		useState<Subscription | null>(null);
@@ -24,7 +24,6 @@ export const useWebSocketStream = () => {
 		setIsStopDisabled(true);
 
 		if (websocket) {
-			// Subscribe to WebSocket and orders
 			const subscription = websocket.subscribe({
 				next: (message: unknown) => {
 					const typedMessage = message as TWebSocketMessage;
@@ -36,8 +35,6 @@ export const useWebSocketStream = () => {
 
 					if (typedMessage.TYPE === '8') {
 						const typedOrder = message as TWebSocketMessage;
-
-						// Push new order into BehaviorSubject
 						ordersSubject.current.next([typedOrder]);
 					}
 

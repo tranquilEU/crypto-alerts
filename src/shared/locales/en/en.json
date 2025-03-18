@@ -12,17 +12,20 @@
 		"error": "WebSocket connection error"
 	},
 	"monitor": {
-		"type": "TYPE",
-		"m": "M",
-		"fsym": "FSYM",
+		"order": "ORDER",
+		"market": "MARKET",
+		"coin": "COIN",
 		"tsym": "TSYM",
-		"side": "SIDE",
+		"bidAsk": "BID/ASK",
 		"action": "ACTION",
 		"ccseq": "CCSEQ",
-		"p": "P",
-		"q": "Q",
+		"positionValue": "POSITION VALUE",
+		"assetVolume": "ASSET VOLUME",
 		"seq": "SEQ",
-		"reportedns": "REPORTEDNS",
-		"delayns": "DELAYNS"
+		"reported": "REPORTED",
+		"delay": "DELAY",
+		"bid": "BID",
+		"ask": "ASK",
+		"update": "Update"
 	}
 }
