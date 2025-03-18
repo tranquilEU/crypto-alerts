@@ -1,4 +1,5 @@
 import Alerts from '@/features/Alerts/Alerts';
+import Home from '@/features/Home/Home';
 import Monitor from '@/features/Monitor/Monitor';
 import Sidebar from '@/shared/components/Sidebar/Sidebar';
 import { useWebSocketStream } from '@/shared/hooks/useWebSocketStream';
@@ -28,6 +29,7 @@ const App: React.FC = () => {
 				/>
 				<div className="flex-1">
 					<Routes>
+						<Route path="/" element={<Home />} />
 						<Route path="/monitor" element={<Monitor orders={orders} />} />
 						<Route path="/alerts" element={<Alerts />} />
 					</Routes>

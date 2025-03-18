@@ -47,7 +47,9 @@ const Sidebar: React.FC<SidebarProps> = ({
 			<div>
 				<div className="flex items-center justify-between p-4">
 					{isExpanded && (
-						<h2 className="text-2xl font-bold">{t('sidebar.title')}</h2>
+						<Link to="/" className="text-2xl font-bold">
+							{t('sidebar.title')}
+						</Link>
 					)}
 					<Button
 						className="rounded bg-gray-600 p-2 hover:bg-gray-500"

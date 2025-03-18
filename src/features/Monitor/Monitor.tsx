@@ -16,8 +16,8 @@ const MonitorPage: React.FC<MonitorPageProps> = ({ orders }) => {
 
 	return (
 		<>
-			{orders && orders.length > 0 && (
-				<div className="h-screen w-full overflow-hidden bg-black font-mono text-sm text-green-400">
+			<div className="h-screen w-full overflow-hidden bg-black font-mono text-sm text-green-400">
+				{orders && orders.length > 0 && (
 					<div ref={parentRef} className="h-full w-full overflow-y-auto px-2">
 						<table className="w-full table-auto border-collapse">
 							<thead>
@@ -73,8 +73,8 @@ const MonitorPage: React.FC<MonitorPageProps> = ({ orders }) => {
 							</tbody>
 						</table>
 					</div>
-				</div>
-			)}
+				)}
+			</div>
 		</>
 	);
 };
