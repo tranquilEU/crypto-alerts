@@ -1,4 +1,5 @@
-import { TWebSocketMessage } from '@/shared/@types/stream';
+import { useAlerts } from '@/features/Alerts/useAlerts';
+import { TOrders, TWebSocketMessage } from '@/shared/@types/stream';
 import {
 	Table,
 	TableBody,
@@ -16,40 +17,25 @@ type TAlerts = {
 	cheapOrders: TWebSocketMessage[];
 	solidOrders: TWebSocketMessage[];
 	bigBiznisHere: TWebSocketMessage[];
+	setCheapOrders: React.Dispatch<React.SetStateAction<TOrders[]>>;
+	setSolidOrders: React.Dispatch<React.SetStateAction<TOrders[]>>;
+	setBigBiznisHere: React.Dispatch<React.SetStateAction<TOrders[]>>;
 };
 
 const Alerts: React.FC<TAlerts> = ({
 	cheapOrders,
 	solidOrders,
-	bigBiznisHere
+	bigBiznisHere,
+	setCheapOrders,
+	setSolidOrders,
+	setBigBiznisHere
 }) => {
 	const { t } = useTranslation();
-
-	const setTitleColor = (label: string) => {
-		switch (label) {
-			case t('alerts.cheapOrders'):
-				return 'text-yellow-500';
-			case t('alerts.solidOrders'):
-				return 'text-red-500';
-			case t('alerts.bigBiznisHere'):
-				return 'text-blue-500';
-			default:
-				return '';
-		}
-	};
-
-	const setTableColor = (label: string) => {
-		switch (label) {
-			case t('alerts.cheapOrders'):
-				return 'bg-yellow-100';
-			case t('alerts.solidOrders'):
-				return 'bg-red-200';
-			case t('alerts.bigBiznisHere'):
-				return 'bg-blue-300';
-			default:
-				return '';
-		}
-	};
+	const { setTableColor, setTitleColor } = useAlerts({
+		setCheapOrders,
+		setSolidOrders,
+		setBigBiznisHere
+	});
 
 	const createTable = (orders: TWebSocketMessage[], label: string) => {
 		return (

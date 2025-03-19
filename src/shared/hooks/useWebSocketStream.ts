@@ -6,7 +6,7 @@ import {
 } from '@/shared/constants/alertConstants';
 import { EMessageType } from '@/shared/enums/message';
 import { createWebSocket } from '@/shared/services/websocketService';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -37,24 +37,6 @@ export const useWebSocketStream = () => {
 			setBigBiznisHere(prev => [...prev, { TIMESTAMP: Date.now(), ...order }]);
 		}
 	};
-
-	const cleanupOldOrders = (
-		setStateFn: React.Dispatch<React.SetStateAction<TOrders[]>>
-	) => {
-		setStateFn(prev =>
-			prev.filter(order => Date.now() - order.TIMESTAMP <= 60000)
-		);
-	};
-
-	useEffect(() => {
-		const intervalId = setInterval(() => {
-			cleanupOldOrders(setCheapOrders);
-			cleanupOldOrders(setSolidOrders);
-			cleanupOldOrders(setBigBiznisHere);
-		}, 1000);
-
-		return () => clearInterval(intervalId);
-	}, []);
 
 	const startStream = () => {
 		setIsStreaming(true);
@@ -140,6 +122,9 @@ export const useWebSocketStream = () => {
 		isStartDisabled,
 		isStopDisabled,
 		startStream,
-		stopStream
+		stopStream,
+		setCheapOrders,
+		setSolidOrders,
+		setBigBiznisHere
 	};
 };

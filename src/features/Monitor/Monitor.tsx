@@ -27,10 +27,7 @@ const MonitorPage: React.FC<MonitorPageProps> = ({ orders }) => {
 					<div ref={parentRef} className="h-full w-full overflow-y-auto px-2">
 						<table className="w-full table-auto border-collapse">
 							<thead>
-								<tr
-									className="border-b border-green-700 bg-black text-left text-yellow-400"
-									style={{ position: 'sticky', top: 0, zIndex: 1 }}
-								>
+								<tr className="sticky top-0 z-10 border-b border-green-700 bg-black text-left text-yellow-400">
 									<th>#</th>
 									<th>
 										{

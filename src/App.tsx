@@ -17,7 +17,10 @@ const App: React.FC = () => {
 		isStartDisabled,
 		isStopDisabled,
 		startStream,
-		stopStream
+		stopStream,
+		setCheapOrders,
+		setSolidOrders,
+		setBigBiznisHere
 	} = useWebSocketStream();
 
 	return (
@@ -41,6 +44,9 @@ const App: React.FC = () => {
 									cheapOrders={cheapOrders}
 									solidOrders={solidOrders}
 									bigBiznisHere={bigBiznisHere}
+									setCheapOrders={setCheapOrders}
+									setSolidOrders={setSolidOrders}
+									setBigBiznisHere={setBigBiznisHere}
 								/>
 							}
 						/>
