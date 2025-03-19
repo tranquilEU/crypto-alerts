@@ -41,5 +41,14 @@
 			"reported": "The external exchange reported timestamp in nanoseconds. If they do not provide one, we store the time we receive the message in this field.",
 			"delay": "The difference in nanoseconds between the REPORTEDNS and the time we publish the update on our internal network (network delay from exchange to us + internal aggregation delay + internal delay in propagating the message)."
 		}
+	},
+	"alerts": {
+		"alertMessage": "Alert Message",
+		"price": "Price",
+		"quantity": "Quantity",
+		"total": "Total",
+		"cheapOrders": "Cheap Orders",
+		"solidOrders": "Solid Orders",
+		"bigBiznisHere": "Big Biznis Here"
 	}
 }

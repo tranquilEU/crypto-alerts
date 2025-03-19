@@ -10,6 +10,9 @@ import { ToastContainer } from 'react-toastify';
 const App: React.FC = () => {
 	const {
 		orders,
+		cheapOrders,
+		solidOrders,
+		bigBiznisHere,
 		isStreaming,
 		isStartDisabled,
 		isStopDisabled,
@@ -31,7 +34,16 @@ const App: React.FC = () => {
 					<Routes>
 						<Route path="/" element={<Home />} />
 						<Route path="/monitor" element={<Monitor orders={orders} />} />
-						<Route path="/alerts" element={<Alerts />} />
+						<Route
+							path="/alerts"
+							element={
+								<Alerts
+									cheapOrders={cheapOrders}
+									solidOrders={solidOrders}
+									bigBiznisHere={bigBiznisHere}
+								/>
+							}
+						/>
 					</Routes>
 				</div>
 			</div>

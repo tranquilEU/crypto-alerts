@@ -11,6 +11,9 @@ export const useWebSocketStream = () => {
 	const snapshot = useRef<TSnapshot | undefined>(undefined);
 	const ordersSubject = useRef(new BehaviorSubject<TWebSocketMessage[]>([]));
 	const [orders, setOrders] = useState<TWebSocketMessage[]>([]);
+	const [cheapOrders, setCheapOrders] = useState<TWebSocketMessage[]>([]);
+	const [solidOrders, setSolidOrders] = useState<TWebSocketMessage[]>([]);
+	const [bigBiznisHere, setBigBiznisHere] = useState<TWebSocketMessage[]>([]);
 	const [webSocketSubscription, setWebSocketSubscription] =
 		useState<Subscription | null>(null);
 	const [isStreaming, setIsStreaming] = useState(false);
@@ -18,6 +21,16 @@ export const useWebSocketStream = () => {
 	const [isStopDisabled, setIsStopDisabled] = useState(true);
 
 	const { websocket, subscribe, unsubscribe } = createWebSocket();
+
+	const detectAlerts = (order: TWebSocketMessage) => {
+		if (order.P < 50000) {
+			setCheapOrders(prev => [...prev, order]);
+		} else if (order.Q > 10) {
+			setSolidOrders(prev => [...prev, order]);
+		} else if (order.P * order.Q > 1000000) {
+			setBigBiznisHere(prev => [...prev, order]);
+		}
+	};
 
 	const startStream = () => {
 		setIsStreaming(true);
@@ -36,6 +49,7 @@ export const useWebSocketStream = () => {
 					if (typedMessage.TYPE === '8') {
 						const typedOrder = message as TWebSocketMessage;
 						ordersSubject.current.next([typedOrder]);
+						detectAlerts(typedOrder);
 					}
 
 					setTimeout(() => {
@@ -95,6 +109,9 @@ export const useWebSocketStream = () => {
 	return {
 		snapshot: snapshot.current,
 		orders: orders.reverse(),
+		cheapOrders,
+		solidOrders,
+		bigBiznisHere,
 		isStreaming,
 		isStartDisabled,
 		isStopDisabled,
