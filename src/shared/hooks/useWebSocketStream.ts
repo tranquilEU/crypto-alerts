@@ -1,6 +1,12 @@
-import { TSnapshot, TWebSocketMessage } from '@/shared/@types/stream';
+import { TOrders, TSnapshot, TWebSocketMessage } from '@/shared/@types/stream';
+import {
+	BIG_BIZNIS_HERE,
+	CHEAP_ORDER,
+	SOLID_ORDER
+} from '@/shared/constants/alertConstants';
+import { EMessageType } from '@/shared/enums/message';
 import { createWebSocket } from '@/shared/services/websocketService';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -11,9 +17,9 @@ export const useWebSocketStream = () => {
 	const snapshot = useRef<TSnapshot | undefined>(undefined);
 	const ordersSubject = useRef(new BehaviorSubject<TWebSocketMessage[]>([]));
 	const [orders, setOrders] = useState<TWebSocketMessage[]>([]);
-	const [cheapOrders, setCheapOrders] = useState<TWebSocketMessage[]>([]);
-	const [solidOrders, setSolidOrders] = useState<TWebSocketMessage[]>([]);
-	const [bigBiznisHere, setBigBiznisHere] = useState<TWebSocketMessage[]>([]);
+	const [cheapOrders, setCheapOrders] = useState<TOrders[]>([]);
+	const [solidOrders, setSolidOrders] = useState<TOrders[]>([]);
+	const [bigBiznisHere, setBigBiznisHere] = useState<TOrders[]>([]);
 	const [webSocketSubscription, setWebSocketSubscription] =
 		useState<Subscription | null>(null);
 	const [isStreaming, setIsStreaming] = useState(false);
@@ -23,14 +29,32 @@ export const useWebSocketStream = () => {
 	const { websocket, subscribe, unsubscribe } = createWebSocket();
 
 	const detectAlerts = (order: TWebSocketMessage) => {
-		if (order.P < 50000) {
-			setCheapOrders(prev => [...prev, order]);
-		} else if (order.Q > 10) {
-			setSolidOrders(prev => [...prev, order]);
-		} else if (order.P * order.Q > 1000000) {
-			setBigBiznisHere(prev => [...prev, order]);
+		if (order.P < CHEAP_ORDER) {
+			setCheapOrders(prev => [...prev, { TIMESTAMP: Date.now(), ...order }]);
+		} else if (order.Q > SOLID_ORDER) {
+			setSolidOrders(prev => [...prev, { TIMESTAMP: Date.now(), ...order }]);
+		} else if (order.P * order.Q > BIG_BIZNIS_HERE) {
+			setBigBiznisHere(prev => [...prev, { TIMESTAMP: Date.now(), ...order }]);
 		}
 	};
+
+	const cleanupOldOrders = (
+		setStateFn: React.Dispatch<React.SetStateAction<TOrders[]>>
+	) => {
+		setStateFn(prev =>
+			prev.filter(order => Date.now() - order.TIMESTAMP <= 60000)
+		);
+	};
+
+	useEffect(() => {
+		const intervalId = setInterval(() => {
+			cleanupOldOrders(setCheapOrders);
+			cleanupOldOrders(setSolidOrders);
+			cleanupOldOrders(setBigBiznisHere);
+		}, 1000);
+
+		return () => clearInterval(intervalId);
+	}, []);
 
 	const startStream = () => {
 		setIsStreaming(true);
@@ -41,12 +65,12 @@ export const useWebSocketStream = () => {
 				next: (message: unknown) => {
 					const typedMessage = message as TWebSocketMessage;
 
-					if (typedMessage.TYPE === '9') {
+					if (typedMessage.TYPE === EMessageType.SNAPSHOT) {
 						const typedSnapshot = message as TSnapshot;
 						snapshot.current = typedSnapshot;
 					}
 
-					if (typedMessage.TYPE === '8') {
+					if (typedMessage.TYPE === EMessageType.ORDER_BOOK_L2) {
 						const typedOrder = message as TWebSocketMessage;
 						ordersSubject.current.next([typedOrder]);
 						detectAlerts(typedOrder);

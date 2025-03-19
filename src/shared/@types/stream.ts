@@ -23,3 +23,5 @@ export type TSnapshot = Omit<
 	BID: TBid[];
 	ASK: TAsk[];
 };
+
+export type TOrders = TWebSocketMessage & { TIMESTAMP: number };
